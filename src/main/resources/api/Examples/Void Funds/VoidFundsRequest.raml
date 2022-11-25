@@ -1,0 +1,47 @@
+#%RAML 1.0 NamedExample
+{
+  "account_id": "af8e9f4a-b6ec-4677-a9a0-1ff199a8b2ef",
+  "instrument_id": "unique-psp-instrument-identifier-1234567890",
+  "transactions": [
+    {
+      "payment_method": "credit_card",
+      "payment_wallet": "Apple Pay",
+      "instrument_id": "unique-psp-instrument-identifier-1234567890",
+      "transaction_id": "unique-for-every-transaction-in-this-payload-authorized-12345",
+      "capture_amount": 100,
+      "refund_amount": 0,
+      "currency": "USD",
+      "reason": "authorization",
+      "metadata": {
+        "essential": {
+          "instrument_metadata": {
+            "card_brand": "Visa",
+            "card_last4": "0000",
+            "card_expiration_month": "11",
+            "card_expiration_year": "2030",
+            "gift_card_number": "1234567890",
+            "payer_email": "johndoe@example.com"
+          }
+        }
+      }
+    },
+    {
+      "payment_method": "credit_card",
+      "payment_wallet": "Apple Pay",
+      "instrument_id": "unique-psp-instrument-identifier-1234567890",
+      "transaction_id": "unique for every transaction in this payload-captured-12345",
+      "capture_amount": -100,
+      "refund_amount": 100,
+      "currency": "USD",
+      "metadata": {},
+      "reason": "capture",
+      "created_at": "0001-01-01T00:00:00Z"
+    }
+  ],
+  "idempotency_key": "373fa237-d70e-4177-8139-41354a21c356",
+  "arguments": {
+    "amount": 100,
+    "currency": "USD"
+  },
+  "metadata": {}
+}

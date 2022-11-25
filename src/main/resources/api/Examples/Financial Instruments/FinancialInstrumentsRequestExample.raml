@@ -1,0 +1,17 @@
+#%RAML 1.0 NamedExample
+
+{
+  "account_id": "9c849222-3bca-4881-9c68-2e91da34ab21",
+  "idempotency_key": "authorized.987600036172980-9c849222-3bca-4881-9c68-2e91da34ab21",
+  "retry_id" : "authorized.987600036172980-9c849222-3bca-4881-9c68-2e91da34ab21",
+  "arguments": {
+    "amount": 100,
+    "currency": "USD",
+    "payment_method": "credit_card",
+    "instrument": {
+      "identifier": "unique-psp-instrument-identifier-1234567890",
+      "type": "authorized"
+    }
+  },
+  "metadata": {}
+}

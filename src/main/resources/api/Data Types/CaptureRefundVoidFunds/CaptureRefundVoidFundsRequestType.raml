@@ -1,0 +1,17 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  account_id: string
+  instrument_id?: string | nil
+  transactions: 
+    type: array
+    items: !include transactions.raml
+  idempotency_key: string
+  retry_id?: string
+  arguments: !include arguments.raml
+  metadata?:
+    type: object
+      
+
+      

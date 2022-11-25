@@ -1,0 +1,28 @@
+#%RAML 1.0 NamedExample
+
+[
+  {
+    "payment_method": "credit_card",
+    "payment_wallet": "Apple Pay",
+    "transaction_id": "unique-for-every-transaction-in-this-payload-authorized-12345",
+    "instrument_id": "unique-psp-instrument-identifier-1234567890",
+    "capture_amount": 100,
+    "refund_amount": 0,
+    "currency": "USD",
+    "metadata": {
+      "essential": {
+        "instrument_metadata": {
+          "card_brand": "Visa",
+          "card_last4": "0000",
+          "card_expiration_month": "11",
+          "card_expiration_year": "2030",
+          "gift_card_number": "1234567890",
+          "payer_email": "johndoe@example.com"
+        }
+      }
+    },
+    "reason": "authorization",
+    "created_at": "0001-01-01T00:00:00Z",
+    "processed_at": "0001-01-01T00:00:00Z"
+  }
+]

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="psp-mock-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="psp-mock-config" api="psp-mock.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<configuration-properties doc:name="Configuration properties" doc:id="cfe0eaf4-5dae-4077-8a06-13c7859f4ba4" file="dev.yaml" />
+	<flow name="psp-mock-main">
+        <http:listener config-ref="psp-mock-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="psp-mock-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="psp-mock-console">
+        <http:listener config-ref="psp-mock-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="psp-mock-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="post:\payments\financial_instruments:application\json:psp-mock-config">
+        <ee:transform>
+            <ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var cardbrand = p('metadata.cardbrand')
+var cardlast4 = p('metadata.cardlast4')
+var cardexpirationmonth = p('metadata.cardexpirationmonth')
+var cardexpirationyear = p('metadata.cardexpirationyear')
+var giftcard_number = p('metadata.giftcard_number')
+var payeremail = p('metadata.payeremail')
+---
+[{
+	payment_method: payload.arguments.payment_method,
+	payment_wallet: "Apple Pay",
+	transaction_id: uuid(),
+	instrument_id: payload.arguments.instrument.identifier,
+	capture_amount: payload.arguments.amount,
+	refund_amount: 0,
+	currency: ("" default "") ++ payload.arguments.currency,
+	metadata: {
+		essential: {
+			instrument_metadata: {
+				card_brand: cardbrand,
+				card_last4: cardlast4,
+				card_expiration_month: cardexpirationmonth,
+				card_expiration_year: cardexpirationyear,
+				gift_card_number: giftcard_number,
+				payer_email: payeremail
+			}
+		}
+	},
+	reason: "authorization",
+	created_at: now() as DateTime {
+		format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"
+	} as String {
+		format: "yyyy-MM-dd'T'HH:mm:ss"
+	} ++ "Z",
+	processed_at: now() as DateTime {
+		format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"
+	} as String {
+		format: "yyyy-MM-dd'T'HH:mm:ss"
+	} ++ "Z",
+}]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\payments\financial_instruments\(financial_instrument_id)\_capture:application\json:psp-mock-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="financial_instrument_id">attributes.uriParams.'financial_instrument_id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+payload.transactions map ( transaction , indexOfTransaction ) -> {
+	payment_method: transaction.payment_method,
+	payment_wallet: transaction.payment_wallet,
+	transaction_id: transaction.transaction_id ++ "Captured" ++ vars.financial_instrument_id,
+	instrument_id: vars.financial_instrument_id,
+	capture_amount: - payload.arguments.amount,
+	refund_amount: payload.arguments.amount,
+	currency: payload.arguments.currency,
+	created_at: now() as DateTime {format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"} as String {format: "yyyy-MM-dd'T'HH:mm:ss"} ++ "Z",
+	processed_at: now() as DateTime {format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"} as String {format: "yyyy-MM-dd'T'HH:mm:ss"} ++ "Z",
+	reason: "capture"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\payments\financial_instruments\(financial_instrument_id)\_refund:application\json:psp-mock-config">
+		<set-variable value="#[attributes.uriParams.financial_instrument_id]" doc:name="instrumentID" doc:id="93d76f68-1602-4292-acb3-e7744fc1ebdc" variableName="instrumentID"/>
+		<ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="financial_instrument_id">attributes.uriParams.'financial_instrument_id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	payment_method: payload.transactions[1].payment_method,
+	payment_wallet: payload.transactions[1].payment_wallet,
+	transaction_id: uuid() ++ "Refund" ++ vars.instrumentID,
+	instrument_id: vars.instrumentID,
+	capture_amount: 0,
+	refund_amount: - payload.arguments.amount,
+	currency: payload.arguments.currency,
+	created_at: now() as DateTime {
+		format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"
+	} as String {
+		format: "yyyy-MM-dd'T'HH:mm:ss"
+	} ++ "Z",
+	processed_at: now() as DateTime {
+		format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"
+	} as String {
+		format: "yyyy-MM-dd'T'HH:mm:ss"
+	} ++ "Z",
+	reason: "refund"
+}]
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\payments\financial_instruments\(financial_instrument_id)\_revoke:application\json:psp-mock-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="financial_instrument_id">attributes.uriParams.'financial_instrument_id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	payment_method: payload.transactions[1].payment_method,
+	payment_wallet: payload.transactions[1].payment_wallet,
+	transaction_id: uuid() ++ "revoked" ++ vars.financial_instrument_id,
+	instrument_id: vars.financial_instrument_id,
+	capture_amount: - payload.arguments.amount,
+	refund_amount: 0,
+	currency: payload.arguments.currency,
+	created_at: now() as DateTime {
+		format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"
+	} as String {
+		format: "yyyy-MM-dd'T'HH:mm:ss"
+	} ++ "Z",
+	processed_at: now() as DateTime {
+		format: "dd-MMM-yy hh.mm.ss.SSSSSSSSS a VV"
+	} as String {
+		format: "yyyy-MM-dd'T'HH:mm:ss"
+	} ++ "Z",
+	reason: "revoke"
+}]
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

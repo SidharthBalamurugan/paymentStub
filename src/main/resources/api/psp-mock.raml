@@ -1,0 +1,142 @@
+#%RAML 1.0
+title: PSP Mock
+version: 1.0.0
+description: Payment Mock to create financial instruments to process external payment service providers like adyen, paypal, etc.
+
+types: 
+  FinancialInstrumentsRequestType: !include Data Types/Financial Instruments/Financial_InstrumentsRequest.raml
+  FinancialInstrumentsResponseType: !include Data Types/Financial Instruments/Financial_InstrumentResponse.raml
+  FinancialInstrument400RequestErrorType: !include Data Types/Error Data Types/CreateFinancialInstumentsErrorType.raml
+  FinancialInstrument500RequestErrorType: !include Data Types/Error Data Types/CreateFinancialInstumentsErrorType.raml
+  CaptureRefundVoidFundsRequestType: !include Data Types/CaptureRefundVoidFunds/CaptureRefundVoidFundsRequestType.raml
+  CaptureRefundVoidFundsResponseType: !include Data Types/CaptureRefundVoidFunds/CaptureRefundVoidFundsResponseType.raml
+
+#Process Payment
+/payments/financial_instruments:
+    post:
+      headers:
+        Authorization:
+          type: string 
+          required: true
+      body: 
+        application/json:
+          type: FinancialInstrumentsRequestType
+          examples:
+            input: !include Examples/Financial Instruments/FinancialInstrumentsRequestExample.raml
+      responses: 
+        200:
+          body: 
+            application/json:
+              type: FinancialInstrumentsResponseType
+              examples: 
+                output: !include Examples/Financial Instruments/FinancialInstrumentsResponseExample.raml
+        400:
+          body:
+            application/json:
+              type: FinancialInstrument400RequestErrorType
+              examples:
+                output: !include Examples/ErrorExamples/FinancialInstrumentRequest400Error.raml 
+        500:
+          body:
+            application/json:
+              type: FinancialInstrument500RequestErrorType
+              examples: 
+                output: !include Examples/ErrorExamples/FinancialInstruments500ErrorExample.raml
+
+    #Capture funds into financial instruments for processing payment.
+    /{financial_instrument_id}/_capture:
+      post:
+        headers:
+          Authorization: 
+            type: string 
+            required: true
+        body: 
+          application/json:
+            type: CaptureRefundVoidFundsRequestType
+            examples:
+              input: !include Examples/Capture Funds Example/CaptureFundsRequestExample.raml
+        responses: 
+          200:
+            body: 
+              application/json:
+                type: CaptureRefundVoidFundsResponseType
+                examples: 
+                  output: !include Examples/Capture Funds Example/CaptureFundsResponseExample.raml
+          400:
+            body:
+              application/json:
+                type: FinancialInstrument400RequestErrorType
+                examples:
+                  output: !include Examples/ErrorExamples/FinancialInstrumentRequest400Error.raml 
+          500:
+            body:
+              application/json:
+                type: FinancialInstrument500RequestErrorType
+                examples: 
+                  output: !include Examples/ErrorExamples/FinancialInstruments500ErrorExample.raml
+    
+    /{financial_instrument_id}/_refund:
+      post:
+          headers:
+            Authorization: 
+              type: string 
+              required: true
+          body: 
+            application/json:
+              type: CaptureRefundVoidFundsRequestType
+              examples:
+                input: !include Examples/Refund Funds Example/RefundFundsRequest.raml
+          responses: 
+            200:
+              body: 
+                application/json:
+                  type: CaptureRefundVoidFundsResponseType
+                  examples: 
+                    output: !include Examples/Refund Funds Example/RefundFundsResponse.raml
+            400:
+              body:
+                application/json:
+                  type: FinancialInstrument400RequestErrorType
+                  examples:
+                    output: !include Examples/ErrorExamples/FinancialInstrumentRequest400Error.raml 
+            500:
+              body:
+                application/json:
+                  type: FinancialInstrument500RequestErrorType
+                  examples: 
+                    output: !include Examples/ErrorExamples/FinancialInstruments500ErrorExample.raml
+
+    /{financial_instrument_id}/_revoke:
+      post:
+          headers:
+            Authorization: 
+              type: string 
+              required: true
+          body: 
+            application/json:
+              type: CaptureRefundVoidFundsRequestType 
+              examples:
+                input: !include Examples/Void Funds/VoidFundsRequest.raml
+          responses: 
+            200:
+              body: 
+                application/json:
+                  type: CaptureRefundVoidFundsResponseType
+                  examples: 
+                    output: !include Examples/Void Funds/VoidFundsResponse.raml
+            400:
+              body:
+                application/json:
+                  type: FinancialInstrument400RequestErrorType
+                  examples:
+                    output: !include Examples/ErrorExamples/FinancialInstrumentRequest400Error.raml 
+            500:
+              body:
+                application/json:
+                  type: FinancialInstrument500RequestErrorType
+                  examples: 
+                    output: !include Examples/ErrorExamples/FinancialInstruments500ErrorExample.raml
+
+               
+
+ 

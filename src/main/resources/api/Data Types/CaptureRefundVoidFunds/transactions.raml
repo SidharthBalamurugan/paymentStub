@@ -1,0 +1,21 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  transaction_id: string
+  instrument_id: string
+  capture_amount?: number 
+  refund_amount?: number 
+  currency: string
+  reason?:
+    enum: 
+      - authorization
+      - revoke
+      - refund
+      - capture
+  metadata?: 
+    type: object
+  payment_method?: string
+  payment_wallet?: string
+  created_at?: string
+  processed_at? : string

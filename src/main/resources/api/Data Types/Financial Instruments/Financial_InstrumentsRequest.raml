@@ -1,0 +1,10 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  account_id: string
+  idempotency_key: string
+  retry_id: string
+  arguments: !include arguments.raml
+  metadata?:
+    type: object

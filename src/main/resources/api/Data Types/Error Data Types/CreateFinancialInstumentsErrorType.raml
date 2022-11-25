@@ -1,0 +1,16 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  error_code: 
+      enum:
+      - internal_error
+      - retry_error
+      - instrument_error
+      - fraud_error
+      - rate_limit
+      - failed_command
+      - psp_api_error
+  message: string
+  details?:
+    type: object
